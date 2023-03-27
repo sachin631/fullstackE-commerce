@@ -12,6 +12,10 @@ ProductRouter.put("/updateproduct/:_id",ProductController.updateProduct);
 ProductRouter.delete("/deleteproduct/:_id",ProductController.deleteTheProducts);
 // get particular products
 ProductRouter.get("/particularproduct/:_id",ProductController.particularProduct);
+//search product api
+ProductRouter.get("/searchproducts/:key",ProductController.searchProducts);
+//pagination of products
+ProductRouter.get("/paginationproduct",ProductController.pagination); 
 
 
 

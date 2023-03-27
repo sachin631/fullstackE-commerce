@@ -1,4 +1,3 @@
-const { useParams } = require("react-router-dom");
 const productModel = require("../models/ProductModel");
 
 //store the products in dataBase
@@ -65,7 +64,7 @@ exports.updateProduct = async (req, res) => {
 exports.deleteTheProducts = async (req, res) => {
   try {
     const { _id } = req.params;
-    const deletedData = await productModel.deleteOne({_id});
+    const deletedData = await productModel.deleteOne({ _id });
     res.status(201).json({ success: true, deletedData: deletedData });
   } catch (err) {
     res.status(201).json({ success: false, error: err.message });
@@ -74,23 +73,50 @@ exports.deleteTheProducts = async (req, res) => {
 
 //getSingleProduct api
 exports.particularProduct = async (req, res) => {
-
-  try{
-
+  try {
     const { _id } = req.params;
-  const getParticularData =await productModel.findOne({_id});
-  res.status(201).json({
-    success: true,
-    message: getParticularData,
-  });
-
-  }catch(error){
-
+    const getParticularData = await productModel.findOne({ _id });
+    res.status(201).json({
+      success: true,
+      message: getParticularData,
+    });
+  } catch (error) {
     res.status(201).json({
       success: false,
       message: error.message,
     });
-
   }
-  
+};
+
+//serach api for product based on name,category,price
+exports.searchProducts = async (req, res) => {
+  const { key } = req.params;
+  try {
+    const searchProduct = await productModel.find({
+      $or: [{ name: { $regex: key } }, { category: { $regex: key } }],
+    });
+    res.status(201).json({ success: true, searchedproduct: searchProduct });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+//pagination api of products
+
+exports.pagination = async (req, res) => {
+  try {
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 1;
+    const skip = (page - 1) * limit;
+    console.log(`page:${page}`);
+    console.log(`page:${limit}`);
+    console.log(`skip:${skip}`);
+
+    const allProducts = await productModel.find().skip(skip).limit(limit);
+    res.status(200).json({ success: true, message: allProducts });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
 };
