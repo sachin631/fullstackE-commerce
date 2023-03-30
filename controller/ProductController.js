@@ -3,6 +3,7 @@ const productModel = require("../models/ProductModel");
 //store the products in dataBase
 exports.storeproductss = async (req, res) => {
   try {
+    req.body.user=req.userId //getting the user id created while userModel is formened and logini//this is just to determine who enter or which admin enter new products
     const {
       name,
       description,
@@ -12,7 +13,9 @@ exports.storeproductss = async (req, res) => {
       stock,
       numofReview,
       review,
+      user,
       createdAt,
+     
     } = req.body;
 
     const ProductData = new productModel({
@@ -24,6 +27,7 @@ exports.storeproductss = async (req, res) => {
       stock,
       numofReview,
       review,
+      user,
       createdAt,
     });
     await ProductData.save();

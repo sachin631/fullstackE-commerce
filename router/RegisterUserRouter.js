@@ -6,6 +6,10 @@ const RegisterUserController = require("../controller/RegisterUserController");
 RegisterUserRouter.post("/registeruserpost", RegisterUserController.RegisteredUser);
 //loginUser
 RegisterUserRouter.post("/login",RegisterUserController.userLogin);
+//logout
+RegisterUserRouter.get("/logout",RegisterUserController.logoutUser);
+//sending mail from the backend
+RegisterUserRouter.post("/sendmail",RegisterUserController.sendMail);
 
 
 module.exports = RegisterUserRouter;

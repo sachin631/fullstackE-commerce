@@ -34,6 +34,22 @@ const RegisterUserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  avatar: {
+    public_id: {
+      type: String,
+      required: true,
+    },
+    url: {
+      type: String,
+      required: true,
+    },
+  },
+  role:{
+    type:String,
+    default:"user"
+  },
+  resetPassWordToken:String,
+
   tokens: [
     {
       token: {
@@ -42,6 +58,9 @@ const RegisterUserSchema = new mongoose.Schema({
       },
     },
   ],
+  passWordResetToken:{
+      type:String
+  },
   cart: [],
 });
 
@@ -62,9 +81,6 @@ RegisterUserSchema.methods.tokenGeneration = async function () {
   this.save();
   return token;
 };
-
-
-
 
 //RegisterUserModel
 const RegisterUserModel = new mongoose.model(
