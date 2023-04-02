@@ -8,8 +8,10 @@ RegisterUserRouter.post("/registeruserpost", RegisterUserController.RegisteredUs
 RegisterUserRouter.post("/login",RegisterUserController.userLogin);
 //logout
 RegisterUserRouter.get("/logout",RegisterUserController.logoutUser);
-//sending mail from the backend
+//sending mail from the backend for password reset purpose
 RegisterUserRouter.post("/sendmail",RegisterUserController.sendMail);
+//forgotPassword verified the user on belhlaf of id and token is send on emial if this shown error then send page to error page else alow to update password
+RegisterUserRouter.get("/forgotpassword/:_id/:token",RegisterUserController.forgotPassword);
 
 
 module.exports = RegisterUserRouter;

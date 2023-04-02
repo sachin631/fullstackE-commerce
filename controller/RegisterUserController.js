@@ -114,7 +114,7 @@ exports.sendMail = async (req, res) => {
         { _id: isUser._id },
         process.env.secretKey,
         {
-          expiresIn: "120s",
+          expiresIn: "1d",
         }
       );
       // console.log(resetPassWordToken);
@@ -133,19 +133,16 @@ exports.sendMail = async (req, res) => {
           text: ` this link is only valid for 2 minutes http://localhost:3000/${isUser._id}/${setUserToken.passWordResetToken}`,
         };
 
-         transporter.sendMail(
-          mailerOption,
-          (error, info) => {
-            if (error) {
-              res.status(400).json({ error: error });
-            } else {
-              console.log("email sent", info.response);
-              res
-                .status(200)
-                .json({ message: "mail is sent to the user Successfuly" });
-            }
+        transporter.sendMail(mailerOption, (error, info) => {
+          if (error) {
+            res.status(400).json({ error: error });
+          } else {
+            console.log("email sent", info.response);
+            res
+              .status(200)
+              .json({ message: "mail is sent to the user Successfuly" });
           }
-        );
+        });
       } else {
         console.log("token is not updated yet");
       }
@@ -159,6 +156,30 @@ exports.sendMail = async (req, res) => {
   }
 };
 
-
 //https://youtu.be/T6sBAXGwhgw
 //1:00 harsh pathak
+
+exports.forgotPassword = async (req, res) => {
+  const { _id, token } = req.params;
+  console.log("id token is ",_id,token);
+
+  try {
+    const verifiedUser = await RegisterUserModel.findOne({
+      _id: _id,
+      passWordResetToken:token
+    });
+    console.log(verifiedUser)//proclem herre
+
+    const verifingToken = jwt.verify(token, process.env.secretKey);
+    console.log("veryfing token",verifingToken);
+
+    if(verifiedUser && verifingToken._id){
+      res.status(200).json({verifiedUser:verifiedUser});
+    }
+    else{
+      res.status(400).json({message:"user not exist please enter valid data"});
+    }
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
