@@ -12,6 +12,9 @@ RegisterUserRouter.get("/logout",RegisterUserController.logoutUser);
 RegisterUserRouter.post("/sendmail",RegisterUserController.sendMail);
 //forgotPassword verified the user on belhlaf of id and token is send on emial if this shown error then send page to error page else alow to update password
 RegisterUserRouter.get("/forgotpassword/:_id/:token",RegisterUserController.forgotPassword);
+//enter New Password 
+RegisterUserRouter.post("/:_id/:token",RegisterUserController.newPassWord);
+
 
 
 module.exports = RegisterUserRouter;

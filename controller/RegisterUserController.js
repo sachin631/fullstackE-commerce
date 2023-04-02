@@ -161,25 +161,57 @@ exports.sendMail = async (req, res) => {
 
 exports.forgotPassword = async (req, res) => {
   const { _id, token } = req.params;
-  console.log("id token is ",_id,token);
+  console.log("id token is ", _id, token);
 
   try {
     const verifiedUser = await RegisterUserModel.findOne({
       _id: _id,
-      passWordResetToken:token
+      passWordResetToken: token,
     });
-    console.log(verifiedUser)//proclem herre
+    console.log(verifiedUser); //proclem herre
 
     const verifingToken = jwt.verify(token, process.env.secretKey);
-    console.log("veryfing token",verifingToken);
+    console.log("veryfing token", verifingToken);
 
-    if(verifiedUser && verifingToken._id){
-      res.status(200).json({verifiedUser:verifiedUser});
-    }
-    else{
-      res.status(400).json({message:"user not exist please enter valid data"});
+    if (verifiedUser && verifingToken._id) {
+      res.status(200).json({ verifiedUser: verifiedUser });
+    } else {
+      res
+        .status(400)
+        .json({ message: "user not exist please enter valid data" });
     }
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
+};
+
+//enter new  password api work on click
+exports.newPassWord = async (req, res) => {
+  //we have to verify the user and token agin here beacuase when user spend more then 2 min after react at newpasssword page then it shown token expire error 
+  const { passWord } = req.body;
+  const { _id, token } = req.params;
+
+  try {
+    const validUser = await RegisterUserModel.findOne({
+      _id: _id,
+      passWordResetToken: token,
+    });
+    const verifiedToken = jwt.verify(token, process.env.secretKey);
+
+    if (validUser && verifiedToken._id) {
+      const newHashPassWord =await bcrypt.hash(passWord, 12);
+      const findUser = await RegisterUserModel.findByIdAndUpdate(
+        { _id: _id },
+        { passWord: newHashPassWord }
+      );
+      console.log("sachin",findUser);
+       findUser.save();
+      res.status(200).json({ user: findUser });
+    } else {
+      res.status(200).json({ user: "userNotfound" });
+    }
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+
 };
