@@ -5,12 +5,12 @@ exports.userAuthentication = async (req, res, next) => {
   try {
     const token = req.cookies.FullStackCookie;
     const verifyToken = jwt.verify(token, process.env.secretKey);
-    console.log(verifyToken);
+    // console.log(verifyToken);
 
     const rootuser = await userModel.findOne({
       _id: verifyToken._id,
     });
-    console.log(rootuser);
+    // console.log(rootuser);
 
     if (!rootuser) {
       throw new Error("user not found authniticatate.js");
@@ -26,6 +26,7 @@ exports.userAuthentication = async (req, res, next) => {
   }
 };
 
+//i think for admin role 
 exports.authorizeRole = (...roles) => {
   return (req, res, next) => {
     if (roles.includes(req.rootuser.role)) {

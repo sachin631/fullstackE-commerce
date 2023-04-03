@@ -38,7 +38,7 @@ exports.RegisteredUser = async (req, res) => {
   }
 };
 
-//userLogin api
+// 😊😚😊😊😊😊😊😚😊😊😊😊 userLogin api 😊😚😊😊😊😊😊😚😊😊😊😊
 exports.userLogin = async (req, res) => {
   const { email, passWord } = req.body;
 
@@ -72,7 +72,7 @@ exports.userLogin = async (req, res) => {
   }
 };
 
-//logout api
+//😊😚😊😊😊😊😊😚😊😊😊😊 logout api 😊😚😊😊😊😊😊😚😊😊😊😊
 exports.logoutUser = (req, res) => {
   try {
     // res.clearCookie("FullStackCookie");
@@ -98,11 +98,7 @@ const transporter = nodeMailer.createTransport({
   },
 });
 
-//maileroption
-
-//sendMail
-
-//create the sending mail api
+// 😊😚😊😊😊😊😊😚😊😊😊😊create the sending mail api😊😚😊😊😊😊😊😚😊😊😊😊
 exports.sendMail = async (req, res) => {
   try {
     const { email } = req.body;
@@ -156,9 +152,6 @@ exports.sendMail = async (req, res) => {
   }
 };
 
-//https://youtu.be/T6sBAXGwhgw
-//1:00 harsh pathak
-
 exports.forgotPassword = async (req, res) => {
   const { _id, token } = req.params;
   console.log("id token is ", _id, token);
@@ -185,9 +178,9 @@ exports.forgotPassword = async (req, res) => {
   }
 };
 
-//enter new  password api work on click
+// enter new  password api work on click
 exports.newPassWord = async (req, res) => {
-  //we have to verify the user and token agin here beacuase when user spend more then 2 min after react at newpasssword page then it shown token expire error 
+  //we have to verify the user and token agin here beacuase when user spend more then 2 min after react at newpasssword page then it shown token expire error
   const { passWord } = req.body;
   const { _id, token } = req.params;
 
@@ -199,13 +192,13 @@ exports.newPassWord = async (req, res) => {
     const verifiedToken = jwt.verify(token, process.env.secretKey);
 
     if (validUser && verifiedToken._id) {
-      const newHashPassWord =await bcrypt.hash(passWord, 12);
+      const newHashPassWord = await bcrypt.hash(passWord, 12);
       const findUser = await RegisterUserModel.findByIdAndUpdate(
         { _id: _id },
         { passWord: newHashPassWord }
       );
-      console.log("sachin",findUser);
-       findUser.save();
+      console.log("sachin", findUser);
+      findUser.save();
       res.status(200).json({ user: findUser });
     } else {
       res.status(200).json({ user: "userNotfound" });
@@ -213,5 +206,43 @@ exports.newPassWord = async (req, res) => {
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
-
 };
+
+// After login change user details when click on its profile
+
+// chnage passWordByProfile
+exports.newPassWordByProfile = async (req, res) => {
+  try {
+    const user = req.rootuser._id;
+    const { newPassWordByProfile } = req.body;
+    console.log(newPassWordByProfile);
+    const { newRepeatPassWordProfile } = req.body;
+    console.log(newRepeatPassWordProfile);
+
+    // Compare the unhashed password strings using bcrypt.compare()
+    
+
+    if (newPassWordByProfile===newRepeatPassWordProfile) {
+      // Hash the new passwords
+      const nextPassWord = await bcrypt.hash(newPassWordByProfile, 12);
+      console.log(nextPassWord);
+      const nextRepeatPassWord = await bcrypt.hash(newRepeatPassWordProfile, 12);
+      console.log(nextRepeatPassWord);
+
+      const updateUserPassWord = await RegisterUserModel.findByIdAndUpdate(
+        user,
+        {
+          passWord: nextPassWord,
+          re: nextRepeatPassWord,
+        }
+      );
+      res.status(201).json({ message: updateUserPassWord });
+    } else {
+      res.status(400).json({ error: "Passwords do not match" });
+    }
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+//😊😚😊😊😊😊😊😚😊😊😊😊😊😚😊😊😊😊😊😚😊😊😊😊😊😚😊😊😊😊😊😚😊😊😊😊😊😚😊😊😊😊😊😚😊😊😊😊😊😚😊😊😊😊😊😚😊😊😊😊😊😚😊😊😊😊😊😚😊😊😊😊😊😚😊😊😊😊😊😚😊😊😊😊😊😚😊😊😊😊😊😚😊😊😊😊
