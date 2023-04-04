@@ -38,7 +38,7 @@ exports.RegisteredUser = async (req, res) => {
   }
 };
 
-// 😊😚😊😊😊😊😊😚😊😊😊😊 userLogin api 😊😚😊😊😊😊😊😚😊😊😊😊
+//  userLogin api
 exports.userLogin = async (req, res) => {
   const { email, passWord } = req.body;
 
@@ -72,7 +72,7 @@ exports.userLogin = async (req, res) => {
   }
 };
 
-//😊😚😊😊😊😊😊😚😊😊😊😊 logout api 😊😚😊😊😊😊😊😚😊😊😊😊
+//logout api
 exports.logoutUser = (req, res) => {
   try {
     // res.clearCookie("FullStackCookie");
@@ -98,7 +98,7 @@ const transporter = nodeMailer.createTransport({
   },
 });
 
-// 😊😚😊😊😊😊😊😚😊😊😊😊create the sending mail api😊😚😊😊😊😊😊😚😊😊😊😊
+//create the sending mail api
 exports.sendMail = async (req, res) => {
   try {
     const { email } = req.body;
@@ -210,6 +210,17 @@ exports.newPassWord = async (req, res) => {
 
 // After login change user details when click on its profile
 
+//get all details of the login user
+exports.getAllDetailsOfUser = async (req, res) => {
+  try {
+    const user = req.rootuser._id;
+    const userfound = await RegisterUserModel.findOne(user);
+    res.status(201).json({ success: true, userfound: userfound });
+  } catch (error) {
+    res.status(400).json({ success: false, error: error });
+  }
+};
+
 // chnage passWordByProfile
 exports.newPassWordByProfile = async (req, res) => {
   try {
@@ -219,14 +230,13 @@ exports.newPassWordByProfile = async (req, res) => {
     const { newRepeatPassWordProfile } = req.body;
     console.log(newRepeatPassWordProfile);
 
-    // Compare the unhashed password strings using bcrypt.compare()
-    
-
-    if (newPassWordByProfile===newRepeatPassWordProfile) {
-      // Hash the new passwords
+    if (newPassWordByProfile === newRepeatPassWordProfile) {
       const nextPassWord = await bcrypt.hash(newPassWordByProfile, 12);
       console.log(nextPassWord);
-      const nextRepeatPassWord = await bcrypt.hash(newRepeatPassWordProfile, 12);
+      const nextRepeatPassWord = await bcrypt.hash(
+        newRepeatPassWordProfile,
+        12
+      );
       console.log(nextRepeatPassWord);
 
       const updateUserPassWord = await RegisterUserModel.findByIdAndUpdate(
@@ -234,7 +244,8 @@ exports.newPassWordByProfile = async (req, res) => {
         {
           passWord: nextPassWord,
           re: nextRepeatPassWord,
-        }
+        },
+        { new: true } //to retunr updateed document must use new true
       );
       res.status(201).json({ message: updateUserPassWord });
     } else {
@@ -245,4 +256,75 @@ exports.newPassWordByProfile = async (req, res) => {
   }
 };
 
-//😊😚😊😊😊😊😊😚😊😊😊😊😊😚😊😊😊😊😊😚😊😊😊😊😊😚😊😊😊😊😊😚😊😊😊😊😊😚😊😊😊😊😊😚😊😊😊😊😊😚😊😊😊😊😊😚😊😊😊😊😊😚😊😊😊😊😊😚😊😊😊😊😊😚😊😊😊😊😊😚😊😊😊😊😊😚😊😊😊😊😊😚😊😊😊😊
+//update userprofile after login like email,name,phoneNumber and avtar of user
+exports.updateProfileAfterLogin = async (req, res) => {
+  try {
+    const { name, email, phoneNumber } = req.body;
+    const { _id } = req.rootuser;
+    if (name && email && phoneNumber) {
+      const updateProfile = await RegisterUserModel.findByIdAndUpdate(
+        _id,
+        { name: name, email: email, phoneNumber: phoneNumber },
+        { new: true }
+      ); //adding new true to solve the problem of updaditing after double click on send button in postman
+      res.status(201).json({ message: updateProfile });
+    } else {
+      res
+        .status(400)
+        .json({ success: false, error: "please Enter all details" });
+    }
+  } catch (error) {
+    res.status(400).json({ success: false, error: error });
+  }
+};
+
+//get all user for admin data manipuldation
+exports.allRegisteredUserDetails = async (req, res) => {
+  try {
+    const user = await RegisterUserModel.find();
+    res.status(201).json({ success: true, user: user });
+  } catch (error) {
+    res.status(400).json({ success: false, error: error });
+  }
+};
+
+//get particular user by admin
+exports.getParticularUserDataForAdmin = async (req, res) => {
+  try {
+    const { _id } = req.params;
+    const user = await RegisterUserModel.findOne({ _id: _id });
+
+    res.status(201).json({ success: true, user: user });
+  } catch (error) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+};
+
+//update user admin roles
+exports.updateRole = async (req, res) => {
+  try {
+    const { _id } = req.params;
+    console.log(_id);
+    const { name, email, phoneNumber, role } = req.body;
+    const updateUserData = await RegisterUserModel.findByIdAndUpdate(
+      _id,
+      { name: name, email: email, phoneNumber: phoneNumber, role: role },
+      { new: true }
+    );
+    res.status(201).json({ success: true, user: updateUserData });
+  } catch (error) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+};
+
+//deleteUserFrom admin panel
+exports.deleteUserFromAdmin = async (req, res) => {
+  try {
+    const { _id } = req.params;
+    console.log(_id);
+    const deletedUser = await RegisterUserModel.deleteOne({ _id: _id });
+    res.status(201).json({ success: true, deleteduser: deletedUser });
+  } catch (error) {
+    res.status(400).json({ success: false, error: error });
+  }
+};
